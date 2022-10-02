@@ -1,0 +1,54 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "swift",
+			"args": [
+				"build",
+				"--product",
+				"quote",
+				"--enable-code-coverage"
+			],
+			"cwd": "/Users/p2907483/apple/swift-url-protocol-mock",
+			"problemMatcher": [
+				"$swiftc"
+			],
+			"group": "build",
+			"label": "swift: Build Debug quote",
+			"detail": "swift build --product quote --enable-code-coverage"
+		},
+		{
+            "label": "Build tests",
+            "command": "swift",
+            "args": [
+                "test",
+                "--enable-code-coverage",
+            ],
+            "type": "shell",
+            "presentation": {
+                "clear": true,
+                "close": false,
+                "reveal": "never",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Run tests",
+            "command": "swift",
+            "args": [
+                "test",
+                "--enable-code-coverage",
+                "--skip-build"
+            ],
+            "dependsOn": ["Build tests"],
+            "type": "shell",
+            "group": "test",
+            "presentation": {
+                "clear": true,
+                "close": true,
+                "reveal": "never",
+                "panel": "shared"
+            }
+        },
+	]
+}

@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug quote",
+            "program": "${workspaceFolder:swift-quotes}/.build/debug/quote",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-quotes}",
+            "preLaunchTask": "swift: Build Debug quote"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Release quote",
+            "program": "${workspaceFolder:swift-quotes}/.build/release/quote",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-quotes}",
+            "preLaunchTask": "swift: Build Release quote"
+        }
+    ]
+}
