@@ -1,4 +1,5 @@
 import Cocoa
+import Quotes
 
 class MockProtocol: URLProtocol {
     // Change these in sub-classes to provide a different response
@@ -17,7 +18,7 @@ class MockProtocol: URLProtocol {
     class var responseData: Data? { "{\"key\":\"value\"}".data(using: .utf8) }
     // response error, will superseed other responses, override in subclass if want different
     class var responseError: Error? { nil }
-    
+
     static var session: URLSession {
         let config = URLSessionConfiguration.ephemeral
         var protocols: [AnyClass] = [Self.self]
@@ -25,7 +26,7 @@ class MockProtocol: URLProtocol {
         config.protocolClasses = protocols
         return URLSession(configuration: config)
     }
-    
+
     class func response() -> URLResponse {
         guard let  response = HTTPURLResponse(url: Self.url,
                                               statusCode: Self.statusCode,
@@ -61,9 +62,40 @@ class MockProtocol: URLProtocol {
 
 // These are some mocks for the protocols
 
-class HappyProtocol: MockProtocol {
-    class override var url: URL { URL(string: "https://www.apple.com")! }
+class SuccessProtocol: MockProtocol {
+    class override var url: URL { QuoteModel.getQuoteURL }
+    class override var responseData: Data? {
+        """
+        [{"a":"author","q":"quote","h":"html"}]
+        """.data(using: .utf8)
+    }
 }
 
+class NoQuotesErrorProtocol: MockProtocol {
+    class override var url: URL { QuoteModel.getQuoteURL }
+    class override var responseData: Data? { "[]".data(using: .utf8) }
+}
 
+class DecodeErrorProtocol: MockProtocol {
+    class override var url: URL { QuoteModel.getQuoteURL }
+}
 
+class GetNot200Protocol: MockProtocol {
+    class override var url: URL { QuoteModel.getQuoteURL }
+    class override var statusCode: Int { 400 }
+}
+
+class GetNotHTTPResponseProtocol: MockProtocol {
+    class override var url: URL { QuoteModel.getQuoteURL }
+    class override func response() -> URLResponse {
+        return URLResponse()
+    }
+}
+
+enum GetError: Error {
+    case test
+}
+class GetErrorProtocol: MockProtocol {
+    class override var url: URL { QuoteModel.getQuoteURL }
+    class override var responseError: Error? { GetError.test }
+}

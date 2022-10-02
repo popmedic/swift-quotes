@@ -2,27 +2,20 @@ import XCTest
 @testable import Quotes
 
 final class QuoteModelTests: XCTestCase {
-    
-    func testGetError() throws {
-        enum GetError: Error {
-            case test
-        }
-        class GetErrorProtocol: MockProtocol {
-            class override var url: URL { QuoteModel.getURL }
-            class override var responseError: Error? { GetError.test }
-        } 
+
+    func testGetQuoteError() throws {
         guard URLProtocol.registerClass(GetErrorProtocol.self) else {
             XCTFail("unable to register protocol")
             return
         }
         let exp = XCTestExpectation()
         let viewModel = QuoteModel(session: URLSession.shared)
-        viewModel.get { result in
+        viewModel.getQuote { result in
             switch result {
-            case .failure(let error): 
-                XCTAssertEqual(error.localizedDescription, GetError.test.localizedDescription) 
-            default: 
-                XCTFail("should be failure with an error")   
+            case .failure(let error):
+                XCTAssertEqual(error.localizedDescription, GetError.test.localizedDescription)
+            default:
+                XCTFail("should be failure with an error")
             }
             exp.fulfill()
         }
@@ -31,27 +24,21 @@ final class QuoteModelTests: XCTestCase {
     }
 
     func testNotHTTPResponse() {
-        class GetNotHTTPResponseProtocol: MockProtocol {
-            class override var url: URL { QuoteModel.getURL }
-            class override func response() -> URLResponse {
-                return URLResponse()
-            }
-        } 
         guard URLProtocol.registerClass(GetNotHTTPResponseProtocol.self) else {
             XCTFail("unable to register protocol")
             return
         }
         let exp = XCTestExpectation()
         let viewModel = QuoteModel(session: URLSession.shared)
-        viewModel.get { result in
+        viewModel.getQuote { result in
             switch result {
-            case .failure(let error): 
+            case .failure(let error):
                 XCTAssertEqual(
-                    error.localizedDescription, 
+                    error.localizedDescription,
                     QuoteModel.QuoteModelError.notHTTPResponse.localizedDescription
-                ) 
-            default: 
-                XCTFail("should be failure with an not HTTP response error")   
+                )
+            default:
+                XCTFail("should be failure with an not HTTP response error")
             }
             exp.fulfill()
         }
@@ -60,25 +47,21 @@ final class QuoteModelTests: XCTestCase {
     }
 
     func testGetNotStatus200() throws {
-        class GetNot200Protocol: MockProtocol {
-            class override var url: URL { QuoteModel.getURL }
-            class override var statusCode: Int { 400 }
-        }
         guard URLProtocol.registerClass(GetNot200Protocol.self) else {
             XCTFail("unable to register protocol")
             return
         }
         let exp = XCTestExpectation()
         let viewModel = QuoteModel(session: URLSession.shared)
-        viewModel.get { result in
+        viewModel.getQuote { result in
             switch result {
-            case .failure(let error): 
+            case .failure(let error):
                 XCTAssertEqual(
-                    error.localizedDescription, 
+                    error.localizedDescription,
                     QuoteModel.QuoteModelError.badStatus(code: 400).localizedDescription
-                ) 
-            default: 
-                XCTFail("should be failure with an bad status code error")   
+                )
+            default:
+                XCTFail("should be failure with an bad status code error")
             }
             exp.fulfill()
         }
@@ -87,77 +70,62 @@ final class QuoteModelTests: XCTestCase {
     }
 
     func testDecodeError() {
-        class SuccessProtocol: MockProtocol {
-            class override var url: URL { QuoteModel.getURL }
-        }
-        guard URLProtocol.registerClass(SuccessProtocol.self) else {
+        guard URLProtocol.registerClass(DecodeErrorProtocol.self) else {
             XCTFail("unable to register protocol")
             return
         }
         let exp = XCTestExpectation()
         let viewModel = QuoteModel(session: URLSession.shared)
-        viewModel.get { result in
+        viewModel.getQuote { result in
             switch result {
-            case .failure: 
-                break 
-            default: 
-                XCTFail("should be failure with an no data error")   
+            case .failure:
+                break
+            default:
+                XCTFail("should be failure with an no data error")
             }
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1.0)
-        URLProtocol.unregisterClass(SuccessProtocol.self)
+        URLProtocol.unregisterClass(DecodeErrorProtocol.self)
     }
 
     func testNoQuotesError() {
-        class SuccessProtocol: MockProtocol {
-            class override var url: URL { QuoteModel.getURL }
-            class override var responseData: Data? { "[]".data(using: .utf8) }
-        }
-        guard URLProtocol.registerClass(SuccessProtocol.self) else {
+        guard URLProtocol.registerClass(NoQuotesErrorProtocol.self) else {
             XCTFail("unable to register protocol")
             return
         }
         let exp = XCTestExpectation()
         let viewModel = QuoteModel(session: URLSession.shared)
-        viewModel.get { result in
+        viewModel.getQuote { result in
             switch result {
-            case .failure(let error): 
+            case .failure(let error):
                 XCTAssertEqual(
-                    error.localizedDescription, 
+                    error.localizedDescription,
                     QuoteModel.QuoteModelError.noQuotes.localizedDescription
                 )
-            default: 
-                XCTFail("should be failure with an no quotes error")   
+            default:
+                XCTFail("should be failure with an no quotes error")
             }
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1.0)
-        URLProtocol.unregisterClass(SuccessProtocol.self)
+        URLProtocol.unregisterClass(NoQuotesErrorProtocol.self)
     }
 
     func testSuccess() {
-        class SuccessProtocol: MockProtocol {
-            class override var url: URL { QuoteModel.getURL }
-            class override var responseData: Data? { 
-                """
-                [{"a":"author","q":"quote","h":"html"}]
-                """.data(using: .utf8)
-            }
-        }
         guard URLProtocol.registerClass(SuccessProtocol.self) else {
             XCTFail("unable to register protocol")
             return
         }
         let exp = XCTestExpectation()
         let viewModel = QuoteModel(session: URLSession.shared)
-        viewModel.get { result in
+        viewModel.getQuote { result in
             switch result {
             case .failure: XCTFail("should not fail")
-            case .success(let quote): 
+            case .success(let quote):
                 XCTAssertEqual(quote.a, "author")
                 XCTAssertEqual(quote.q, "quote")
-                XCTAssertEqual(quote.h, "html")   
+                XCTAssertEqual(quote.h, "html")
             }
             exp.fulfill()
         }

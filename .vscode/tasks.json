@@ -5,8 +5,6 @@
 			"type": "swift",
 			"args": [
 				"build",
-				"--product",
-				"quote",
 				"--enable-code-coverage"
 			],
 			"cwd": "/Users/p2907483/apple/swift-url-protocol-mock",

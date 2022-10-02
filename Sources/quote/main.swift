@@ -5,7 +5,7 @@ let group = DispatchGroup()
 
 group.enter()
 let viewModel = QuoteModel(session: URLSession.shared)
-viewModel.get() { result in
+viewModel.getQuote { result in
     switch result {
     case .failure(let error):
         print(error)

@@ -11,14 +11,14 @@ let package = Package(
         .executableTarget(
             name: "quote",
             dependencies: [
-                "Quotes",
+                "Quotes"
             ]
         ),
         .testTarget(
             name: "QuotesTests",
             dependencies: [
-                "Quotes",
+                "Quotes"
             ]
-        ),
+        )
     ]
 )

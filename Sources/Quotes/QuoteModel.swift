@@ -7,9 +7,9 @@ public struct Quote: Codable {
 }
 
 public struct QuoteModel {
-    static var getURL: URL = {
-        guard let url = URL(string: location) else {
-            preconditionFailure("\(location) is not a proper URL")
+    public static var getQuoteURL: URL = {
+        guard let url = URL(string: getQuoteLocation) else {
+            preconditionFailure("\(getQuoteLocation) is not a proper URL")
         }
         return url
     }()
@@ -29,13 +29,13 @@ public extension QuoteModel {
 }
 
 public extension QuoteModel {
-    func get(_ completion: @escaping (Result<Quote, Error>) -> Void) {
+    func getQuote(_ completion: @escaping (Result<Quote, Error>) -> Void) {
         let task = session.dataTask(
-            with: QuoteModel.getURL,
+            with: QuoteModel.getQuoteURL,
             completionHandler: { data, response, error in
                 do {
                     // make sure there is not an error
-                    if let error = error { 
+                    if let error = error {
                         throw error
                     }
 
@@ -43,7 +43,7 @@ public extension QuoteModel {
                     guard let response = response as? HTTPURLResponse else {
                         throw QuoteModelError.notHTTPResponse
                     }
-                    
+
                     // make sure the response has a 200 status code
                     guard response.statusCode == 200 else {
                         throw QuoteModelError.badStatus(code: response.statusCode)
@@ -72,4 +72,4 @@ public extension QuoteModel {
     }
 }
 
-private let location = "https://zenquotes.io/api/random"
+private let getQuoteLocation = "https://zenquotes.io/api/random"
