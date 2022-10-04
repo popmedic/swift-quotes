@@ -15,7 +15,7 @@ let animation = PercentProgressAnimation(
 let group = DispatchGroup()
 
 group.enter()
-let viewModel = QuoteModel(session: URLSession.shared) { progress in
+let viewModel = QuoteModel(session: SuccessStub.session) { progress in
     animation.update(
         step: Int(progress * 100.0),
         total: 100,
