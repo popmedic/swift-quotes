@@ -35,7 +35,7 @@ final class QuoteModelTests: XCTestCase {
             case .failure(let error):
                 XCTAssertEqual(
                     error.localizedDescription,
-                    QuoteModel.QuoteModelError.notHTTPResponse.localizedDescription
+                    QuoteModel.Error.notHTTPResponse.localizedDescription
                 )
             default:
                 XCTFail("should be failure with an not HTTP response error")
@@ -58,7 +58,7 @@ final class QuoteModelTests: XCTestCase {
             case .failure(let error):
                 XCTAssertEqual(
                     error.localizedDescription,
-                    QuoteModel.QuoteModelError.badStatus(code: 400).localizedDescription
+                    QuoteModel.Error.badStatus(code: 400).localizedDescription
                 )
             default:
                 XCTFail("should be failure with an bad status code error")
@@ -101,7 +101,7 @@ final class QuoteModelTests: XCTestCase {
             case .failure(let error):
                 XCTAssertEqual(
                     error.localizedDescription,
-                    QuoteModel.QuoteModelError.noQuotes.localizedDescription
+                    QuoteModel.Error.noQuotes.localizedDescription
                 )
             default:
                 XCTFail("should be failure with an no quotes error")

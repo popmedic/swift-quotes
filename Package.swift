@@ -3,21 +3,44 @@
 
 import PackageDescription
 
+let libName = "Quotes"
+let exeName = "quote"
+
 let package = Package(
     name: "Quotes",
-    dependencies: [],
+    platforms: [
+        .macOS(.v10_15),
+        .iOS(.v13)
+    ],
+    products: [
+        .library(
+            name: "\(libName)",
+            targets: ["\(libName)"]
+        ),
+        .executable(
+            name: "\(exeName)",
+            targets: ["\(exeName)"]
+        )
+    ],
+    dependencies: [
+        .package(
+            url: "https://github.com/apple/swift-tools-support-core.git",
+            from: "0.0.1"
+        )
+    ],
     targets: [
-        .target(name: "Quotes"),
+        .target(name: "\(libName)"),
         .executableTarget(
-            name: "quote",
+            name: "\(exeName)",
             dependencies: [
-                "Quotes"
+                Target.Dependency(stringLiteral: "\(libName)"),
+                .product(name: "SwiftToolsSupport", package: "swift-tools-support-core")
             ]
         ),
         .testTarget(
-            name: "QuotesTests",
+            name: "\(libName)Tests",
             dependencies: [
-                "Quotes"
+                Target.Dependency(stringLiteral: "\(libName)")
             ]
         )
     ]
